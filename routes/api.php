@@ -30,3 +30,10 @@ Route::group([
         Route::get('user', 'AuthController@user');
     });
 });
+
+Route::group([
+    'middleware' => 'auth:api'
+  ], function() {
+      Route::get('post/user', 'PostsController@userPosts');
+      Route::resource('post', 'PostsController');
+  });
