@@ -34,10 +34,33 @@ class PostsController extends Controller
      */
     public function store(Request $request)
     {
+        
+        $request->validate([
+            'description' => 'required|string',
+            'image' => 'image|max:5999'
+        ]);
+        // Handle File Upload
+        if($request->hasFile('image')){
+            // Get filename with the extension
+            $filenameWithExt = $request->file('image')->getClientOriginalName();
+            // Get just filename
+            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+            // Get just ext
+            $extension = $request->file('image')->getClientOriginalExtension();
+            // Filename to store
+            $fileNameToStore= $filename.'_'.time().'.'.$extension;
+            // Upload Image
+            $path = $request->file('image')->storeAs('public/images', $fileNameToStore);
+        } else {
+            return response()->json([
+                'message' => 'no image!'
+            ], 201);
+        }
         $post = new Post();
         $post->source = $request->source;
         $post->description = $request->description;
         $post->user_id = $request->user()->id;
+        $post->source = $fileNameToStore;
         $post->save();
 
         return response()->json([
