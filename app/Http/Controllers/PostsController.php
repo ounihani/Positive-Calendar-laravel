@@ -13,9 +13,17 @@ class PostsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Post::with('user')->paginate(18);
+        
+        $posts = Post::with('user')->withCount('votes')->paginate(18);
+        
+        if($request->sort_type == 'sort_by_votes'){
+            return $posts->sortByDesc('votes_count');
+        }else{
+            return $posts->sortByDesc('created_at');
+        }
+        
     }
 
     /**
@@ -136,7 +144,7 @@ class PostsController extends Controller
 
     public function votePost(Request $request){
         $request->validate([
-            'post_id' => 'integer'
+            'post_id' => 'required|integer'
         ]);
         $vote= Vote::where('post_id', '=', $request->post_id)
         ->where('user_id', '=', $request->user()->id)->first();
