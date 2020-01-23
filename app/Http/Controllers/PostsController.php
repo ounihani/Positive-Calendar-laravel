@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Post;
+use App\Vote;
+
 class PostsController extends Controller
 {
     /**
@@ -132,4 +134,28 @@ class PostsController extends Controller
         return Post::where('user_id','=',$request->user()->id)->with('user')->paginate(18);
     }
 
+    public function votePost(Request $request){
+        $request->validate([
+            'post_id' => 'integer'
+        ]);
+        $vote= Vote::where('post_id', '=', $request->post_id)
+        ->where('user_id', '=', $request->user()->id)->first();
+        //return $vote;
+        if(!$vote){
+        $vote = new Vote();
+        $vote->user_id = $request->user()->id;
+        $vote->post_id = $request->post_id;
+        $vote->save();
+        return response()->json([
+            'message' => 'Successfully voted!'
+        ], 201);
+        }else{
+            $vote->delete();
+            return response()->json([
+                'message' => 'Successfully unvoted!'
+            ], 202);
+        }    
+    }
+
+   
 }

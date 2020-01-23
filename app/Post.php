@@ -9,4 +9,7 @@ class Post extends Model
     public function user(){
         return $this->belongsTo('App\User');
     }
+    public function votes(){
+        return $this->HasMany('App\Vote');
+    }
 }

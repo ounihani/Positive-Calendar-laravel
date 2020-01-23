@@ -35,5 +35,6 @@ Route::group([
     'middleware' => 'auth:api'
   ], function() {
       Route::get('post/user', 'PostsController@userPosts');
+      Route::post('post/vote', 'PostsController@votePost');
       Route::resource('post', 'PostsController');
   });
