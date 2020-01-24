@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Post;
 use App\Vote;
+use Carbon\Carbon;
 
 class PostsController extends Controller
 {
@@ -15,15 +16,23 @@ class PostsController extends Controller
      */
     public function index(Request $request)
     {
-        
-        $posts = Post::with('user')->withCount('votes')->paginate(18);
+        $request->validate([
+            'posts_date' => 'nullable|date_format:Y-m-d',
+        ]);
+
+        if($request->posts_date){
+            $posts_date = $request->posts_date; 
+        }else{
+            $posts_date = Carbon::now()->toDateString();
+        }
+
         
         if($request->sort_type == 'sort_by_votes'){
-            return $posts->sortByDesc('votes_count');
+            $posts = Post::with('user')->whereDate('created_at',$posts_date)->withCount('votes')->orderBy('votes_count', 'desc')->paginate(18);    
         }else{
-            return $posts->sortByDesc('created_at');
+            $posts = Post::with('user')->whereDate('created_at',$posts_date)->withCount('votes')->orderBy('created_at', 'desc')->paginate(18);
         }
-        
+        return $posts;
     }
 
     /**
