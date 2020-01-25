@@ -37,4 +37,6 @@ Route::group([
       Route::get('post/user', 'PostsController@userPosts');
       Route::post('post/vote', 'PostsController@votePost');
       Route::resource('post', 'PostsController');
+      Route::get('challenge/current_challenge', 'ChallengesController@currentChallenge');
+      Route::resource('challenge', 'ChallengesController');
   });
