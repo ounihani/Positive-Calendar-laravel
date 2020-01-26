@@ -26,22 +26,22 @@ class PostsController extends Controller
             $posts_date = Carbon::now()->toDateString();
         }
 
-        return Post::with('user')->withCount(array('votes',
-        'votes as voted'  => function($query)
-            {
-                $query->where('votes.user_id', auth()->user()->id);
-            
-            }))->withCount('votes')->orderBy('votes_count', 'desc')->paginate(18); 
-
+        
 
         if($request->sort_type == 'sort_by_votes'){
-            $posts = Post::with('user')->whereDate('created_at',$posts_date)->withCount(array('votes' => function($query)
-            {
-                $query->where('votes.user_id', auth()->user()->id);
-            
-            }))->withCount('votes')->orderBy('votes_count', 'desc')->paginate(18);    
+            $posts = Post::with('user')->whereDate('created_at',$posts_date)->withCount(array('votes',
+            'votes as voted'  => function($query)
+                {
+                    $query->where('votes.user_id', auth()->user()->id);
+                
+                }))->withCount('votes')->orderBy('votes_count', 'desc')->paginate(18);    
         }else{
-            $posts = Post::with('user')->whereDate('created_at',$posts_date)->withCount('votes')->orderBy('created_at', 'desc')->paginate(18);
+            $posts = Post::with('user')->whereDate('created_at',$posts_date)->withCount(array('votes',
+            'votes as voted'  => function($query)
+                {
+                    $query->where('votes.user_id', auth()->user()->id);
+                
+                }))->withCount('votes')->orderBy('created_at', 'desc')->paginate(18);
         }
         return $posts;
     }
