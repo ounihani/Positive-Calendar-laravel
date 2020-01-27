@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Challenge;
 use Carbon\Carbon;
+use App\User;
 
 class ChallengesController extends Controller
 {
@@ -89,4 +90,8 @@ class ChallengesController extends Controller
         return Challenge::where('start_date','<=',$today)->where('deadline','>=',$today)->get();
     }
     
+    public function leaderBoard()
+    {
+        return User::all();
+    }
 }
