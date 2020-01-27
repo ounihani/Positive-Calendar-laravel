@@ -197,7 +197,6 @@ class PostsController extends Controller
                 $score->save();
             }else{
                 $score->score_amount+=$score_to_add;
-                //return $score->score_amount;
                 $score->save();
             }
         }

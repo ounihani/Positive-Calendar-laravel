@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Challenge;
 use Carbon\Carbon;
 use App\User;
+use App\Score;
 
 class ChallengesController extends Controller
 {
@@ -92,6 +93,14 @@ class ChallengesController extends Controller
     
     public function leaderBoard()
     {
-        return User::all();
+        $challenge = Challenge::currentChallenge()->first();
+        if($challenge){
+            return Score::with('user')->where('challenge_id',$challenge->id)->orderBy('score_amount','desc')->paginate(30);
+        }else{
+            return response()->json([
+                'message' => 'no challenge at the moment'
+            ], 200);
+        }
+        
     }
 }
