@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Challenge;
 use Carbon\Carbon;
+use App\User;
+use App\Score;
 
 class ChallengesController extends Controller
 {
@@ -89,4 +91,16 @@ class ChallengesController extends Controller
         return Challenge::where('start_date','<=',$today)->where('deadline','>=',$today)->get();
     }
     
+    public function leaderBoard()
+    {
+        $challenge = Challenge::currentChallenge()->first();
+        if($challenge){
+            return Score::with('user')->where('challenge_id',$challenge->id)->orderBy('score_amount','desc')->paginate(30);
+        }else{
+            return response()->json([
+                'message' => 'no challenge at the moment'
+            ], 200);
+        }
+        
+    }
 }

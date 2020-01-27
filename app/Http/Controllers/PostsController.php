@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Post;
 use App\Vote;
+use App\Challenge;
+use App\Score;
 use Carbon\Carbon;
 
 class PostsController extends Controller
@@ -93,6 +95,8 @@ class PostsController extends Controller
         $post->source = $fileNameToStore;
         $post->save();
 
+        $this->UpdateScore(auth()->user()->id,30);
+
         return response()->json([
             'message' => 'Successfully created post!'
         ], 201);
@@ -148,6 +152,7 @@ class PostsController extends Controller
         }
         if($post->user_id==$request->user()->id){
             $post->delete();
+            $this->UpdateScore(auth()->user()->id,-30);
             return response()->json([
                 'message' => 'Successfully deleted post!'
             ], 201);
@@ -166,6 +171,7 @@ class PostsController extends Controller
         $request->validate([
             'post_id' => 'required|integer'
         ]);
+        $post=Post::find($request->post_id);
         $vote= Vote::where('post_id', '=', $request->post_id)
         ->where('user_id', '=', $request->user()->id)->first();
         //return $vote;
@@ -174,15 +180,37 @@ class PostsController extends Controller
         $vote->user_id = $request->user()->id;
         $vote->post_id = $request->post_id;
         $vote->save();
+        $this->UpdateScore(auth()->user()->id,10);
+        $this->UpdateScore($post->user->id,40);
         return response()->json([
             'message' => 'Successfully voted!'
         ], 201);
-        }else{
-            $vote->delete();
+    }else{
+        $vote->delete();
+        $this->UpdateScore(auth()->user()->id,-10);
+        $this->UpdateScore($post->user->id,-40);
             return response()->json([
                 'message' => 'Successfully unvoted!'
             ], 202);
         }    
+    }
+
+    public function UpdateScore($user_id,$score_to_add){
+        
+        $challenge = Challenge::currentChallenge()->first();
+        if($challenge){
+            $score = Score::where('challenge_id',$challenge->id)->where('user_id',$user_id)->first();
+            if(!$score){
+                $score = new Score();
+                $score->user_id = $user_id;
+                $score->challenge_id = $challenge->id;
+                $score->score_amount = $score_to_add;
+                $score->save();
+            }else{
+                $score->score_amount+=$score_to_add;
+                $score->save();
+            }
+        }
     }
 
    
