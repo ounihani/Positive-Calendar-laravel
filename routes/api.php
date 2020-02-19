@@ -40,4 +40,7 @@ Route::group([
       Route::get('challenge/current_challenge', 'ChallengesController@currentChallenge');
       Route::get('challenge/leaderBoard', 'ChallengesController@leaderBoard');
       Route::resource('challenge', 'ChallengesController');
+      Route::get('daily_mission/get_calendar', 'DailyMissionController@get_calendar');
+      Route::get('daily_mission/get_challenge_by_date', 'DailyMissionController@get_challenge_by_date');
+      Route::get('daily_mission/next_challenges', 'DailyMissionController@next_challenges');
   });
