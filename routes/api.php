@@ -36,6 +36,7 @@ Route::group([
   ], function() {
       Route::get('post/user', 'PostsController@userPosts');
       Route::post('post/vote', 'PostsController@votePost');
+      Route::post('post/report', 'ReportController@report_car');
       Route::resource('post', 'PostsController');
       Route::get('challenge/current_challenge', 'ChallengesController@currentChallenge');
       Route::get('challenge/leaderBoard', 'ChallengesController@leaderBoard');
@@ -43,4 +44,6 @@ Route::group([
       Route::get('daily_mission/get_calendar', 'DailyMissionController@get_calendar');
       Route::get('daily_mission/get_challenge_by_date', 'DailyMissionController@get_challenge_by_date');
       Route::get('daily_mission/next_challenges', 'DailyMissionController@next_challenges');
-  });
+      Route::get('user/position', 'ChallengesController@user_status');
+      
+    });

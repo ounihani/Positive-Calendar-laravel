@@ -11,7 +11,9 @@
 |
 */
 
-Route::get('/','DailyMissionController@get_challenge_by_date');
+Route::get('/', function () {
+    return view('welcome');
+});
 
 Auth::routes();
 

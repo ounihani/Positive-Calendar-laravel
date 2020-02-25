@@ -103,4 +103,23 @@ class ChallengesController extends Controller
         }
         
     }
+
+    public function user_status(Request $request){
+        $challenge = Challenge::currentChallenge()->first();
+        if($challenge){
+            $scores = Score::where('challenge_id',$challenge->id)->orderBy('score_amount','desc')->get();
+            $position = $scores->search(function ( $score ) {
+                return $score->user_id == auth()->user()->id;
+            })+1;
+            return response()->json([
+                'score' =>Score::where('challenge_id',$challenge->id)->where('user_id',auth()->user()->id)->first()->score_amount,
+                'rank' => $position 
+            ], 200);
+        }else{
+            return response()->json([
+                'message' =>'there is no challenge at the moment'
+            ], 400);
+        }
+    }
+
 }

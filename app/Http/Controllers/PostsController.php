@@ -148,7 +148,7 @@ class PostsController extends Controller
         if(!$post){
             return response()->json([
                 'message' => 'Post does not exist'
-            ], 201);
+            ], 404);
         }
         if($post->user_id==$request->user()->id){
             $post->delete();
@@ -159,7 +159,7 @@ class PostsController extends Controller
         }else{
             return response()->json([
                 'message' => 'Not authorized'
-            ], 201);
+            ], 401);
         }
     }
 
