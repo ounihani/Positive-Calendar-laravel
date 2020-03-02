@@ -92,20 +92,13 @@ class PostsController extends Controller
             $extension = $request->file('image')->getClientOriginalExtension();
             // Filename to store
             $fileNameToStore= $filename.'_'.time().'.'.$extension;
-            // Upload Image
-            
-            $path = $request->file('image')->storeAs('public/images', $fileNameToStore);
-            //return asset($path);
-            $img = Image::make($request->file('image')->getRealPath());
-            $path = public_path('/storage/img/resized/image.jpg');
-            $img->resize(100, 100, function ($constraint) {
+            //resizing
+            $img = Image::make($request->file('image'))->resize(320, null, function ($constraint) {
                 $constraint->aspectRatio();
-            })->save($path);
-            dd($img);
-            //return 'public/images/'.$fileNameToStore;
+            });
+            // Upload Image
+            $path = $img->save('storage/images/'.$fileNameToStore);
             
-            //return asset('storage/images/'.$fileNameToStore);
-            //ImageOptimizer::optimize(array('public/images/'.$fileNameToStore));
         } else {
             return response()->json([
                 'message' => 'no image!'
