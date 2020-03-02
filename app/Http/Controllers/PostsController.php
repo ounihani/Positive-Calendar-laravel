@@ -6,9 +6,18 @@ use Illuminate\Http\Request;
 use App\Post;
 use App\Vote;
 use Carbon\Carbon;
+//use Spatie\ImageOptimizer\OptimizerChainFactory;
+//use ImageOptimizer;
+use Image;
 
 class PostsController extends Controller
 {
+    public function __construct()
+    {
+
+        //$this->middleware('optimizeImages')->only('store');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -72,6 +81,10 @@ class PostsController extends Controller
         // Handle File Upload
         if($request->hasFile('image')){
             // Get filename with the extension
+            //$optimizerChain = OptimizerChainFactory::create();
+            //$optimizerChain->optimize($request->file('image'));
+            //ImageOptimizer::optimize($request->file('image'), $pathToOptimizedImage);
+            
             $filenameWithExt = $request->file('image')->getClientOriginalName();
             // Get just filename
             $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
@@ -80,7 +93,19 @@ class PostsController extends Controller
             // Filename to store
             $fileNameToStore= $filename.'_'.time().'.'.$extension;
             // Upload Image
+            
             $path = $request->file('image')->storeAs('public/images', $fileNameToStore);
+            //return asset($path);
+            $img = Image::make($request->file('image')->getRealPath());
+            $path = public_path('/storage/img/resized/image.jpg');
+            $img->resize(100, 100, function ($constraint) {
+                $constraint->aspectRatio();
+            })->save($path);
+            dd($img);
+            //return 'public/images/'.$fileNameToStore;
+            
+            //return asset('storage/images/'.$fileNameToStore);
+            //ImageOptimizer::optimize(array('public/images/'.$fileNameToStore));
         } else {
             return response()->json([
                 'message' => 'no image!'
@@ -185,5 +210,15 @@ class PostsController extends Controller
         }    
     }
 
+    public function convert($from, $to)
+    {
+        $command = 'convert '
+            . $from
+            .' '
+            . '-sampling-factor 4:2:0 -strip -quality 65'
+            .' '
+            . $to;
+        return `$command`;
+    }
    
 }
