@@ -164,7 +164,7 @@ class PostsController extends Controller
     }
 
     public function userPosts(Request $request){
-        return Post::where('user_id','=',$request->user()->id)->with('user')->paginate(18);
+        return Post::where('user_id','=',$request->user()->id)->with('user')->orderBy('created_at', 'desc')->paginate(18);
     }
 
     public function votePost(Request $request){
