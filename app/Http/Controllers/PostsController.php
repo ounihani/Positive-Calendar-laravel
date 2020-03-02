@@ -8,9 +8,11 @@ use App\Vote;
 use App\Challenge;
 use App\Score;
 use Carbon\Carbon;
+use Image;
 
 class PostsController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *
@@ -74,6 +76,10 @@ class PostsController extends Controller
         // Handle File Upload
         if($request->hasFile('image')){
             // Get filename with the extension
+            //$optimizerChain = OptimizerChainFactory::create();
+            //$optimizerChain->optimize($request->file('image'));
+            //ImageOptimizer::optimize($request->file('image'), $pathToOptimizedImage);
+            
             $filenameWithExt = $request->file('image')->getClientOriginalName();
             // Get just filename
             $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
@@ -81,8 +87,13 @@ class PostsController extends Controller
             $extension = $request->file('image')->getClientOriginalExtension();
             // Filename to store
             $fileNameToStore= $filename.'_'.time().'.'.$extension;
+            //resizing
+            $img = Image::make($request->file('image'))->resize(320, null, function ($constraint) {
+                $constraint->aspectRatio();
+            });
             // Upload Image
-            $path = $request->file('image')->storeAs('public/images', $fileNameToStore);
+            $path = $img->save('storage/images/'.$fileNameToStore);
+            
         } else {
             return response()->json([
                 'message' => 'no image!'
@@ -212,6 +223,7 @@ class PostsController extends Controller
             }
         }
     }
+
 
    
 }
