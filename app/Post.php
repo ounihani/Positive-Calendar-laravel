@@ -10,7 +10,11 @@ class Post extends Model
     public function getCreationTimeAttribute()
     {
         Carbon::setLocale('fr');
-        return $this->created_at->diffForHumans();
+        if($this->created_at){
+            return $this->created_at->diffForHumans();
+        }else{
+            return "no time";
+        }
     }
     public function user(){
         return $this->belongsTo('App\User');

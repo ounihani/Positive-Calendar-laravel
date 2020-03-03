@@ -92,7 +92,7 @@ class PostsController extends Controller
                 $constraint->aspectRatio();
             });
             // Upload Image
-            $path = $img->save('storage/images/'.$fileNameToStore);
+            $path = $img->save(public_path('/storage/images/').$fileNameToStore);
             
         } else {
             return response()->json([
@@ -211,7 +211,7 @@ class PostsController extends Controller
             'post_id' => 'required|integer',
             'number_of_claps' => 'required|integer',
         ]);
-        $post=Post::find($request->post_id);
+        $post=Post::find($request->post_id);   
         $vote= Vote::where('post_id', '=', $request->post_id)
         ->where('user_id', '=', $request->user()->id)->first();
         //return $vote;
@@ -220,9 +220,10 @@ class PostsController extends Controller
         }
         $vote->user_id = $request->user()->id;
         $vote->post_id = $request->post_id;
-        $vote->post_id = $request->number_of_claps;
+        $vote->number_of_claps = $request->number_of_claps;
         $vote->save();
         $this->UpdateScore(auth()->user()->id,1);
+        //return $post;
         $this->UpdateScore($post->user->id,$request->number_of_claps);
         return response()->json([
             'message' => 'Successfully calpped!'
