@@ -206,6 +206,29 @@ class PostsController extends Controller
         }    
     }
 
+    public function clapPost(Request $request){
+        $request->validate([
+            'post_id' => 'required|integer',
+            'number_of_claps' => 'required|integer',
+        ]);
+        $post=Post::find($request->post_id);
+        $vote= Vote::where('post_id', '=', $request->post_id)
+        ->where('user_id', '=', $request->user()->id)->first();
+        //return $vote;
+        if(!$vote){
+        $vote = new Vote();
+        }
+        $vote->user_id = $request->user()->id;
+        $vote->post_id = $request->post_id;
+        $vote->post_id = $request->number_of_claps;
+        $vote->save();
+        $this->UpdateScore(auth()->user()->id,1);
+        $this->UpdateScore($post->user->id,$request->number_of_claps);
+        return response()->json([
+            'message' => 'Successfully calpped!'
+        ], 201);
+        
+    }
     public function UpdateScore($user_id,$score_to_add){
         
         $challenge = Challenge::currentChallenge()->first();
